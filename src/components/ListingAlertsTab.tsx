@@ -47,6 +47,7 @@ export function ListingAlertsTab({ currentUser }: Props) {
   const [testNotification, setTestNotification] = useState<AlertItem | null>(null);
 
   const [name, setName] = useState("");
+  const [alertError, setAlertError] = useState<string | null>(null);
   const [recipientEmail, setRecipientEmail] = useState(currentUser.email);
   const [recipientName, setRecipientName] = useState(currentUser.name);
   const [city, setCity] = useState("Tampa");
@@ -57,6 +58,18 @@ export function ListingAlertsTab({ currentUser }: Props) {
 
   const handleCreateAlert = (e: React.FormEvent) => {
     e.preventDefault();
+    setAlertError(null);
+
+    const cleanEmail = recipientEmail.trim().toLowerCase();
+    const isInternal = cleanEmail.endsWith("@themercergroup.com") ||
+                       cleanEmail === currentUser.email.toLowerCase() ||
+                       cleanEmail.includes("mercer");
+
+    if (!isInternal) {
+      setAlertError("Stellar MLS BBO Compliance Rule (§ Exhibit BBO): Listing alerts cannot be sent to clients or external consumers. Delivery is strictly restricted to licensed staff of Office MFR771620.");
+      return;
+    }
+
     const newAlert: AlertItem = {
       id: "alt-" + Date.now(),
       name: name || `${city} ${propertyType} ($${parseInt(minPrice)/1000}k-$${parseInt(maxPrice)/1000}k)`,
@@ -215,6 +228,13 @@ export function ListingAlertsTab({ currentUser }: Props) {
               </button>
             </div>
 
+            {alertError && (
+              <div className="mb-4 p-3.5 rounded-xl bg-rose-50 border border-rose-300 text-rose-800 text-xs flex items-start gap-2.5 shadow-sm animate-in fade-in">
+                <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+                <div className="leading-snug">{alertError}</div>
+              </div>
+            )}
+
             <form onSubmit={handleCreateAlert} className="space-y-4">
               <div>
                 <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">
@@ -243,16 +263,28 @@ export function ListingAlertsTab({ currentUser }: Props) {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">
-                    Internal Agent Email
-                  </label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-xs font-semibold text-slate-700 uppercase">
+                      Internal Agent Email
+                    </label>
+                    <span className="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
+                      Staff Only
+                    </span>
+                  </div>
                   <input
                     type="email"
                     value={recipientEmail}
-                    onChange={(e) => setRecipientEmail(e.target.value)}
+                    onChange={(e) => {
+                      setRecipientEmail(e.target.value);
+                      if (alertError) setAlertError(null);
+                    }}
+                    placeholder="e.g. paul@themercergroup.com"
                     className="w-full border border-slate-300 rounded-lg px-3.5 py-2 text-sm focus:outline-none focus:border-[#bfa15f]"
                     required
                   />
+                  <span className="text-[10px] text-slate-500 mt-0.5 block">
+                    Clients prohibited. Must end in @themercergroup.com
+                  </span>
                 </div>
               </div>
 
