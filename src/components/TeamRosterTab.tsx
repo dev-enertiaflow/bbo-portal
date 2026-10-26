@@ -59,6 +59,7 @@ export function TeamRosterTab() {
   const [lastProvisionedEmail, setLastProvisionedEmail] = useState("");
   const [lastProvisionedPassword, setLastProvisionedPassword] = useState("Mercer-2026!");
   const [emailSent, setEmailSent] = useState(false);
+  const [emailErrorMsg, setEmailErrorMsg] = useState<string | null>(null);
 
   // Copy feedback states
   const [copiedLink, setCopiedLink] = useState(false);
@@ -111,6 +112,7 @@ export function TeamRosterTab() {
           setLastProvisionedPassword(data.tempPassword);
         }
         setEmailSent(Boolean(data.emailDispatched));
+        setEmailErrorMsg(data.emailError || null);
         setInviteSuccess(true);
         await fetchTeam();
       } else {
@@ -354,10 +356,21 @@ Stellar MLS Notice: You will be prompted to set your permanent private password 
                   <h4 className="text-base font-bold text-slate-900">Licensed Member Provisioned!</h4>
                   <p className="text-xs text-slate-500">Authorized in Supabase · Office: MFR771620</p>
                   
-                  <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs text-center mt-2 flex items-center justify-center gap-1.5">
-                    <Mail className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                    <span>We sent an invitation to their email. If you want to send it manually, copy the full invitation below.</span>
-                  </div>
+                  {emailSent ? (
+                    <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs text-center mt-2 flex items-center justify-center gap-1.5">
+                      <Mail className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                      <span>Invitation email dispatched via Supabase to their inbox.</span>
+                    </div>
+                  ) : (
+                    <div className="p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs text-center mt-2 flex items-center justify-center gap-1.5">
+                      <AlertCircle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                      <span>
+                        {emailErrorMsg?.includes("rate limit")
+                          ? "Supabase hourly email limit reached (3/hr). Please copy & send invitation below."
+                          : "Email not dispatched. Please copy & send the invitation below."}
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs space-y-3">

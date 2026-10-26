@@ -121,6 +121,7 @@ export async function POST(req: Request) {
       userId,
       tempPassword,
       emailDispatched,
+      emailError: inviteErr ? inviteErr.message : null,
       loginUrl: dynamicLoginUrl,
     });
   } catch (err: any) {
