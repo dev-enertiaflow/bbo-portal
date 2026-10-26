@@ -3,12 +3,11 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Building2, Lock, Loader2, ShieldCheck, Eye, EyeOff } from "lucide-react";
-import { UserSession } from "@/types";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("paul@themercergroup.com");
-  const [password, setPassword] = useState("BrokerPass2026!");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
@@ -52,7 +51,7 @@ export default function LoginPage() {
       {/* Clean, spacious card */}
       <div className="w-full max-w-md bg-white border border-slate-200/90 rounded-2xl p-8 sm:p-10 shadow-xl shadow-slate-200/50 text-slate-900">
         
-        {/* Brand Header - Minimalist & Crisp */}
+        {/* Brand Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-[#071220] text-[#d4a738] border border-[#d4a738]/30 shadow-md mb-3.5">
             <Building2 className="w-6 h-6" />
@@ -75,24 +74,6 @@ export default function LoginPage() {
           </div>
         )}
 
-        {/* Demo Quick-Fill Pill */}
-        <div className="mb-5 p-3 rounded-xl bg-amber-50/80 border border-amber-200/90 flex items-center justify-between text-xs">
-          <div>
-            <span className="font-bold text-amber-900 block">Managing Broker Credentials</span>
-            <span className="text-amber-700 font-mono text-[11px]">paul@themercergroup.com</span>
-          </div>
-          <button
-            type="button"
-            onClick={() => {
-              setEmail("paul@themercergroup.com");
-              setPassword("BrokerPass2026!");
-            }}
-            className="px-2.5 py-1 bg-amber-600 hover:bg-amber-700 text-white font-bold text-[11px] rounded-lg shadow-sm transition cursor-pointer"
-          >
-            Fill Credentials
-          </button>
-        </div>
-
         {/* Clean Login Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -102,6 +83,7 @@ export default function LoginPage() {
             <input
               type="email"
               value={email}
+              placeholder="e.g. paul@themercergroup.com"
               onChange={(e) => setEmail(e.target.value)}
               className="w-full bg-slate-50 hover:bg-white border border-slate-300 focus:bg-white rounded-xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-[#d4a738] focus:ring-2 focus:ring-[#d4a738]/20 transition"
               required
@@ -116,6 +98,7 @@ export default function LoginPage() {
               <input
                 type={showPassword ? "text" : "password"}
                 value={password}
+                placeholder="Enter password"
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full bg-slate-50 hover:bg-white border border-slate-300 focus:bg-white rounded-xl pl-4 pr-11 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-[#d4a738] focus:ring-2 focus:ring-[#d4a738]/20 transition"
                 required
