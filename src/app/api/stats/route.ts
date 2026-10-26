@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
 import { fetchMarketAnalytics } from "@/lib/statsService";
 
-export async function GET(req: Request) {
+export async function GET() {
   try {
-    const _url = req.url;
     const stats = await fetchMarketAnalytics();
     return NextResponse.json(
       {
