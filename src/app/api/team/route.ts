@@ -49,6 +49,10 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
+    const host = req.headers.get("x-forwarded-host") || req.headers.get("host") || "localhost:3000";
+    const proto = req.headers.get("x-forwarded-proto") || (host.includes("localhost") ? "http" : "https");
+    const origin = req.headers.get("origin") || `${proto}://${host}`;
+    const dynamicLoginUrl = `${origin}/login`;
     const { name, email, mlsId, role } = await req.json();
 
     if (!email || !name) {
@@ -72,7 +76,7 @@ export async function POST(req: Request) {
 
     // 1. Dispatch real outbound invitation email via Supabase Auth
     const { data: inviteData, error: inviteErr } = await supabaseAdmin.auth.admin.inviteUserByEmail(cleanEmail, {
-      redirectTo: "http://localhost:3000/login",
+      redirectTo: dynamicLoginUrl,
       data: userMeta,
     });
 
@@ -117,7 +121,7 @@ export async function POST(req: Request) {
       userId,
       tempPassword,
       emailDispatched,
-      loginUrl: "http://localhost:3000/login",
+      loginUrl: dynamicLoginUrl,
     });
   } catch (err: any) {
     return NextResponse.json({ success: false, message: err.message }, { status: 500 });
