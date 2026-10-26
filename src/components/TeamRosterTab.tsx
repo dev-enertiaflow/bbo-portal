@@ -166,22 +166,7 @@ Stellar MLS Notice: You will be prompted to set your permanent private password 
     setTimeout(() => setCopiedAll(false), 2500);
   };
 
-  const handleEmailDirect = () => {
-    const url = getLoginUrl();
-    const subject = encodeURIComponent("Access to The Mercer Group BBO Portal (Office MFR771620)");
-    const body = encodeURIComponent(
-      `Hello ${lastProvisionedName},\n\n` +
-      `You have been provisioned as an authorized licensed agent for The Mercer Group / Keller Williams Tampa Properties BBO Portal.\n\n` +
-      `Here are your login credentials:\n` +
-      `- Login Portal: ${url}\n` +
-      `- Authorized Email: ${lastProvisionedEmail}\n` +
-      `- Temporary Password: ${lastProvisionedPassword}\n\n` +
-      `Stellar MLS Compliance Notice:\n` +
-      `Upon initial sign-in, you will be prompted to establish your private permanent password.\n\n` +
-      `Office ID: MFR771620`
-    );
-    window.open(`mailto:${lastProvisionedEmail}?subject=${subject}&body=${body}`, "_blank");
-  };
+
 
   const handleConfirmRevoke = async () => {
     if (!memberToRevoke) return;
@@ -369,12 +354,10 @@ Stellar MLS Notice: You will be prompted to set your permanent private password 
                   <h4 className="text-base font-bold text-slate-900">Licensed Member Provisioned!</h4>
                   <p className="text-xs text-slate-500">Authorized in Supabase · Office: MFR771620</p>
                   
-                  {emailSent && (
-                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100/70 text-emerald-800 text-[11px] font-semibold mt-1">
-                      <Mail className="w-3 h-3 text-emerald-600" />
-                      <span>Invitation email dispatched to inbox</span>
-                    </div>
-                  )}
+                  <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs text-center mt-2 flex items-center justify-center gap-1.5">
+                    <Mail className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                    <span>We sent an invitation to their email. If you want to send it manually, copy the full invitation below.</span>
+                  </div>
                 </div>
 
                 <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs space-y-3">
@@ -455,31 +438,19 @@ Stellar MLS Notice: You will be prompted to set your permanent private password 
                 </div>
 
                 {/* Direct Action Buttons */}
-                <div className="space-y-2 pt-2">
-                  <div className="flex flex-col sm:flex-row gap-2">
-                    <button
-                      type="button"
-                      onClick={handleEmailDirect}
-                      className="flex-1 py-2.5 px-3 text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-800 border border-emerald-600 rounded-lg flex items-center justify-center gap-1.5 cursor-pointer transition shadow-sm"
-                      title="Open default email app to send pre-filled invite immediately"
-                    >
-                      <Mail className="w-3.5 h-3.5 text-emerald-100" />
-                      Email Invitation to Agent
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={handleCopyFullInvite}
-                      className={`flex-1 py-2.5 px-3 text-xs font-bold rounded-lg flex items-center justify-center gap-1.5 cursor-pointer transition shadow-sm border ${
-                        copiedAll 
-                          ? "bg-emerald-600 text-white border-emerald-600" 
-                          : "text-[#071220] bg-amber-50 hover:bg-amber-100 border-amber-300"
-                      }`}
-                    >
-                      {copiedAll ? <Check className="w-3.5 h-3.5 text-white" /> : <Copy className="w-3.5 h-3.5 text-amber-700" />}
-                      {copiedAll ? "Invitation Message Copied!" : "Copy Full Invitation Message"}
-                    </button>
-                  </div>
+                <div className="space-y-2.5 pt-2">
+                  <button
+                    type="button"
+                    onClick={handleCopyFullInvite}
+                    className={`w-full py-2.5 px-4 text-xs font-bold rounded-lg flex items-center justify-center gap-2 cursor-pointer transition shadow-sm border ${
+                      copiedAll 
+                        ? "bg-emerald-600 text-white border-emerald-600" 
+                        : "text-[#071220] bg-amber-50 hover:bg-amber-100 border-amber-300"
+                    }`}
+                  >
+                    {copiedAll ? <Check className="w-4 h-4 text-white" /> : <Copy className="w-4 h-4 text-amber-700" />}
+                    {copiedAll ? "Invitation Message Copied!" : "Copy Full Invitation Message"}
+                  </button>
 
                   <button
                     type="button"
