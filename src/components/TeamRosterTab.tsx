@@ -292,10 +292,7 @@ Stellar MLS Notice: You will be prompted to set your permanent private password 
                   <span className="text-slate-500 font-medium">Brokerage Email:</span>
                   <span className="font-semibold text-slate-800">{member.email}</span>
                 </div>
-                <div className="flex items-center justify-between py-1 border-b border-slate-100">
-                  <span className="text-slate-500 font-medium">Direct Phone:</span>
-                  <span className="font-semibold text-slate-800">{member.phone}</span>
-                </div>
+
               </div>
             </div>
 
