@@ -20,7 +20,7 @@ export async function GET() {
       },
     ];
 
-    // Append any real members invited into Supabase Auth
+    // Append any real members created in Supabase Auth
     if (data?.users) {
       data.users.forEach((u) => {
         const email = (u.email || "").toLowerCase();
@@ -72,47 +72,29 @@ export async function POST(req: Request) {
     };
 
     let userId: string | null = null;
-    let emailDispatched = false;
 
-    // 1. Dispatch real outbound invitation email via Supabase Auth
-    const { data: inviteData, error: inviteErr } = await supabaseAdmin.auth.admin.inviteUserByEmail(cleanEmail, {
-      redirectTo: dynamicLoginUrl,
-      data: userMeta,
-    });
+    // Direct account creation in Supabase Auth (zero email dependency, zero rate limits)
+    const { data: listData } = await supabaseAdmin.auth.admin.listUsers();
+    const existing = listData?.users?.find((u) => u.email === cleanEmail);
 
-    if (inviteData?.user) {
-      userId = inviteData.user.id;
-      emailDispatched = true;
-      // Set the temporary password and ensure email confirmation for instant password login
-      await supabaseAdmin.auth.admin.updateUserById(userId, {
+    if (existing) {
+      userId = existing.id;
+      await supabaseAdmin.auth.admin.updateUserById(existing.id, {
         password: tempPassword,
         email_confirm: true,
         user_metadata: userMeta,
       });
     } else {
-      // Fallback: If user was already registered or re-invited, update password and metadata
-      const { data: listData } = await supabaseAdmin.auth.admin.listUsers();
-      const existing = listData?.users?.find((u) => u.email === cleanEmail);
-
-      if (existing) {
-        userId = existing.id;
-        await supabaseAdmin.auth.admin.updateUserById(existing.id, {
-          password: tempPassword,
-          email_confirm: true,
-          user_metadata: userMeta,
-        });
-      } else {
-        const { data: createData, error: createErr } = await supabaseAdmin.auth.admin.createUser({
-          email: cleanEmail,
-          password: tempPassword,
-          email_confirm: true,
-          user_metadata: userMeta,
-        });
-        if (createErr) {
-          return NextResponse.json({ success: false, message: createErr.message }, { status: 400 });
-        }
-        userId = createData?.user?.id || null;
+      const { data: createData, error: createErr } = await supabaseAdmin.auth.admin.createUser({
+        email: cleanEmail,
+        password: tempPassword,
+        email_confirm: true,
+        user_metadata: userMeta,
+      });
+      if (createErr) {
+        return NextResponse.json({ success: false, message: createErr.message }, { status: 400 });
       }
+      userId = createData?.user?.id || null;
     }
 
     return NextResponse.json({
@@ -120,8 +102,6 @@ export async function POST(req: Request) {
       message: "Agent provisioned successfully in Supabase for Office MFR771620",
       userId,
       tempPassword,
-      emailDispatched,
-      emailError: inviteErr ? inviteErr.message : null,
       loginUrl: dynamicLoginUrl,
     });
   } catch (err: any) {

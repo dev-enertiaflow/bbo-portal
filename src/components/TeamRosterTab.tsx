@@ -353,24 +353,16 @@ Stellar MLS Notice: You will be prompted to set your permanent private password 
                   <div className="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto border border-emerald-200">
                     <CheckCircle2 className="w-6 h-6" />
                   </div>
-                  <h4 className="text-base font-bold text-slate-900">Licensed Member Provisioned!</h4>
+                  <h4 className="text-base font-bold text-slate-900">Agent Account Created!</h4>
                   <p className="text-xs text-slate-500">Authorized in Supabase · Office: MFR771620</p>
                   
-                  {emailSent ? (
-                    <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs text-center mt-2 flex items-center justify-center gap-1.5">
-                      <Mail className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                      <span>Invitation email dispatched via Supabase to their inbox.</span>
+                  <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs flex items-start gap-2.5 mt-2.5 text-left leading-relaxed">
+                    <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                    <div>
+                      <strong className="block font-bold text-slate-900 mb-0.5">Copy & Share Credentials With Agent</strong>
+                      Account created successfully. Please copy the invitation details below and send them to the agent so they can access the portal and establish their private password.
                     </div>
-                  ) : (
-                    <div className="p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs text-center mt-2 flex items-center justify-center gap-1.5">
-                      <AlertCircle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                      <span>
-                        {emailErrorMsg?.includes("rate limit")
-                          ? "Supabase hourly email limit reached (3/hr). Please copy & send invitation below."
-                          : "Email not dispatched. Please copy & send the invitation below."}
-                      </span>
-                    </div>
-                  )}
+                  </div>
                 </div>
 
                 <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs space-y-3">
