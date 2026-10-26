@@ -6,7 +6,7 @@ import {
   CheckCircle2, Building, X, AlertCircle, Loader2, RefreshCw,
   UserX, ShieldAlert, Copy, Check, ExternalLink
 } from "lucide-react";
-import { TeamMember } from "@/types";
+import { TeamMember, UserSession } from "@/types";
 
 // Guaranteed clipboard copy supporting synchronous fallback and modern clipboard API
 function copyTextSafe(text: string): boolean {
@@ -45,7 +45,29 @@ function copyTextSafe(text: string): boolean {
   return success;
 }
 
-export function TeamRosterTab() {
+interface Props {
+  currentUser?: UserSession | null;
+}
+
+export function TeamRosterTab({ currentUser }: Props) {
+  const [effectiveUser, setEffectiveUser] = useState<UserSession | null>(currentUser || null);
+
+  useEffect(() => {
+    if (currentUser) {
+      setEffectiveUser(currentUser);
+    } else if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("bbo_user");
+      if (stored) {
+        try {
+          setEffectiveUser(JSON.parse(stored));
+        } catch (_) {}
+      }
+    }
+  }, [currentUser]);
+
+  const isBroker = effectiveUser?.email?.toLowerCase() === "paul@themercergroup.com" ||
+                   Boolean(effectiveUser?.role?.toLowerCase().includes("broker")) ||
+                   Boolean(effectiveUser?.role?.toLowerCase().includes("principal"));
   const [team, setTeam] = useState<TeamMember[]>([]);
   const [loading, setLoading] = useState(true);
   const [showInviteModal, setShowInviteModal] = useState(false);
@@ -235,13 +257,15 @@ Stellar MLS Notice: You will be prompted to set your permanent private password 
             <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
           </button>
 
-          <button
-            onClick={() => setShowInviteModal(true)}
-            className="flex items-center gap-2 bg-[#071220] hover:bg-[#0e223d] text-white border border-[#d4a738]/60 font-bold text-xs px-4 py-2.5 rounded-lg shadow-md transition cursor-pointer hover:border-[#d4a738]"
-          >
-            <UserPlus className="w-4 h-4 text-[#d4a738]" />
-            Provision Licensed Agent
-          </button>
+          {isBroker && (
+            <button
+              onClick={() => setShowInviteModal(true)}
+              className="flex items-center gap-2 bg-[#071220] hover:bg-[#0e223d] text-white border border-[#d4a738]/60 font-bold text-xs px-4 py-2.5 rounded-lg shadow-md transition cursor-pointer hover:border-[#d4a738]"
+            >
+              <UserPlus className="w-4 h-4 text-[#d4a738]" />
+              Provision Licensed Agent
+            </button>
+          )}
         </div>
       </div>
 
@@ -308,7 +332,7 @@ Stellar MLS Notice: You will be prompted to set your permanent private password 
                   <span className="font-black text-emerald-700 text-sm">{member.salesVolume}</span>
                 </div>
 
-                {member.id !== "broker-1" && (
+                {isBroker && member.id !== "broker-1" && (
                   <button
                     onClick={() => setMemberToRevoke(member)}
                     className="ml-2 px-2.5 py-1 text-[11px] font-semibold text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-lg transition cursor-pointer flex items-center gap-1"

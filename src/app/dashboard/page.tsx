@@ -86,7 +86,7 @@ export default function DashboardPage() {
         )}
 
         {activeTab === "team" && (
-          <TeamRosterTab />
+          <TeamRosterTab currentUser={user} />
         )}
       </main>
 
